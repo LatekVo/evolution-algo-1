@@ -5,13 +5,13 @@
 //IMPORTANT NOTE: remember to reset o variable after every calculation
 
 //IMPORTANT NOTE: i can accelerate progress by initially connecting all nodes horizontally,
-//                so that the outpu will be the input at first, and from there it will mutate
+//                so that the output will be the input at first, and from there it will mutate
 
 use rand::*;
 const _SUB_NODES: usize = 4;
 //-> => ==>
 //basic structure:  Nodes ==> Ai
-//advance structure: Nodes => SuperNodes -> Ai
+//advance structure: Nodes -> SuperNodes => Ai
 
 #[derive(Clone)]
 enum Type {
@@ -19,7 +19,7 @@ enum Type {
     Mult, //will probably have to be if > then multiply or something
     InvAdd,
     InvMult,
-    Ifs, //experimental 0/1 if statement, always Add and then 0-1
+    Ifs, //experimental 0/1 if statement, always Type::Add and then 0-1
 }
 #[derive(Clone)]
 struct Node {
@@ -43,7 +43,18 @@ pub struct Ai {
 
 //will .launch() cluster and it will manage Ais and lanch them on separate threads
 pub struct _Cluster {
-    
+    /*THREAD 0 "MAIN"
+        -storing backup
+        -calculate as 2..∞
+        -.join()
+      THREAD 1 "OPS"
+        -clone from main \
+        -optimize by heavly modyfying least used nodes
+      THREAD 2..∞
+        -classic random mutation
+      
+      best thread becomes new "MAIN" thread, process starts over
+    */
 }
 
 impl Node {
