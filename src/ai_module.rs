@@ -42,7 +42,8 @@ pub struct Ai {
 }
 
 //will .launch() cluster and it will manage Ais and lanch them on separate threads
-pub struct _Cluster {
+pub struct Cluster { 
+    instances: Vec<Ai>
     /*THREAD 0 "MAIN"
         -storing backup
         -calculate as 2..∞
@@ -223,13 +224,14 @@ impl Ai {
         // | 'inp' in | 'o' out |
         let mut o: Vec<f32> = Vec::new();
 
-        //set ins
+        /*set ins
+         * unused, replaced by PREV in node activation loop
         for node in 0..self.brain[0].len() {
             //flipped situation, usually its X * mul.
             //here its 1 * X as an input. Could cause problems later, too bad!
             self.brain[0][node].inp = inp.clone();
         }
-
+        */
         //activate all nodes
         for layer in 0..self.brain.len() {
             let prev = { //prev layer to pass to nodes
@@ -253,11 +255,16 @@ impl Ai {
                 self.brain[layer][node].calculate(prev.clone());
             }
         }
-        
+
         //gather output
-        let end = self.brain.len();
+        let end = self.brain.len()-1;
+        println!("end: {}", end);
+        println!("brain_o len: {}", self. brain[end].len());
+        println!();
         for node in 0..self.brain[end].len() {
+            print!("node_iterator: {}", node);
             o.push(self.brain[end][node].out);
+            println!(" Ok!");
         }
         //return output
         o
@@ -291,4 +298,12 @@ impl Ai {
         //recover ai's old state
     }
     */
+}
+
+impl Cluster {
+    fn new() -> Cluster {
+        Cluster {
+            instances: Vec::new(),
+        }
+    }
 }

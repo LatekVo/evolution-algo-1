@@ -30,11 +30,16 @@ mod ai_module;
 fn main() -> std::io::Result<()> {
     
     let mut ai: ai_module::Ai = ai_module::Ai::new(5, 5); 
+    ai.list();
+
     let mut inp: Vec<f32> = Vec::new();
     inp.push(4.4);
     inp.push(2.2);
+    inp.push(2.2);
+    inp.push(2.2);
+    inp.push(2.2);
     let out = ai.calculate(inp);
-    
+   
     ai.list();
 
     println!("{:?}", out);
