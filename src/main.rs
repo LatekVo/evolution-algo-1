@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * 
+/* * * * * * * * *\
  *
  *  evolution-version-2
  *
@@ -15,15 +15,24 @@
  *  MAY be handful, but may cause some bottlenecks as well.
  *
  *  Could refactor this code to change structs to just tuples.
- * * * * * * * * */
+\* * * * * * * * */
 
-/* * *
+/* * *\
  * If all nodes usage is high, add layer, if node usage is small,
  * TRY, but not force more aggresivly changing the value.
  *
  * My main drive here is no constants, but sometimes constant is
  * better than randomness, so SUB count will stay constant for now
- * * */
+\* * */
+
+// ai cluster removed, as im trying to focus on having single instance
+// of ai, that just evolves, not many pararell. 
+// To accompany for this, i need:
+//  -node adjusting their Type, new chance for unused nodes?
+//  or
+//  -consistant nodes
+//  or
+//  -manual selection of ai
 
 mod ai_module;
 
@@ -41,6 +50,10 @@ fn main() -> std::io::Result<()> {
     let out = ai.calculate(inp);
    
     ai.list();
+
+    //run until something happens lol
+    ai.train();
+
 
     println!("{:?}", out);
 

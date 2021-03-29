@@ -8,7 +8,8 @@
 //                so that the output will be the input at first, and from there it will mutate
 
 use rand::*;
-const _SUB_NODES: usize = 4;
+const _SUB_NODES: usize = 5;
+const THREAD_CNT: usize = 4;
 //-> => ==>
 //basic structure:  Nodes ==> Ai
 //advance structure: Nodes -> SuperNodes => Ai
@@ -23,7 +24,8 @@ enum Type {
 }
 #[derive(Clone)]
 struct Node {
-    inp: Vec<f32>, //input multipliers (treshold for Type::Ifs)
+    inp_mult: Vec<f32>, //input multipliers
+    inp_off: Vec<f32>, //input addition
     out: f32, //this one is changed every calculation
     out_base: f32, //only read once every calculation, never changed
     action: Type,
@@ -41,22 +43,18 @@ pub struct Ai {
     out: Vec<f32>, //may be unnecesary
 }
 
-//will .launch() cluster and it will manage Ais and lanch them on separate threads
-pub struct Cluster { 
-    instances: Vec<Ai>
-    /*THREAD 0 "MAIN"
-        -storing backup
-        -calculate as 2..∞
-        -.join()
-      THREAD 1 "OPS"
-        -clone from main \
-        -optimize by heavly modyfying least used nodes
-      THREAD 2..∞
-        -classic random mutation
-      
-      best thread becomes new "MAIN" thread, process starts over
-    */
-}
+/*THREAD 0 "MAIN"
+    -storing backup
+    -calculate as 2..∞
+    -.join()
+  THREAD 1 "OPS"
+    -clone from main \
+    -optimize by heavly modyfying least used nodes
+  THREAD 2..∞
+    -classic random mutation
+  
+  best thread becomes new "MAIN" thread, process starts over
+*/
 
 impl Node {
     //how many inputs / previous nodes
@@ -84,7 +82,16 @@ impl Node {
         };
         
         Node {
-            inp: {
+            inp_mult: {
+                let mut vec: Vec<f32> = Vec::new();
+                
+                for _ in 0..n {
+                    vec.push(0.0);
+                };
+
+                vec
+            },
+            inp_off: {
                 let mut vec: Vec<f32> = Vec::new();
                 
                 for _ in 0..n {
@@ -99,7 +106,7 @@ impl Node {
         }
     }
     //for recovery, used exclusivly by struct 'Ai' method '.recover()'
-    fn _from(t: Type, n: usize) -> Node {
+    fn _from(t: Type, inp_off_in: Vec<f32>, inp_mult_in: Vec<f32>) -> Node {
 
         let x = match t {
             Type::Add => 0.0,
@@ -110,20 +117,22 @@ impl Node {
         };
 
         Node {
-            inp: {
-                let mut vec: Vec<f32> = Vec::new();
-                
-                for _ in 0..n {
-                    vec.push(0.0);
-                };
-
-                vec
-            },
+            inp_mult: inp_mult_in, 
+            inp_off: inp_off_in,
             out: x,
             out_base: x,
             action: t,
         }
 
+    }
+    fn mutate(&mut self) {
+        let mut rng = rand::thread_rng();
+        for i in 0..self.inp_off.len() {
+            let a_rng: f32 = rng.gen();
+            let b_rng: f32 = rng.gen();
+            self.inp_mult[i] = self.inp_mult[i] * (a_rng % 0.08);
+            self.inp_off[i] = self.inp_off[i] * (b_rng % 0.08);
+        }
     }
     //this is a total bodge, but its way more efficient to take whole node as inp.
     fn calculate(&mut self, inp: Vec<Node>) -> f32 {
@@ -132,7 +141,8 @@ impl Node {
         //NOTE: get brain coords here and check for "-1" layer's all nodes
         for i in 0..inp.len() {
             
-            let elem = inp[i].out * self.inp[i];
+            let elem = (inp[i].out * self.inp_mult[i]) + self.inp_off[i];
+            
             
             match self.action {
                 Type::Add | Type::InvAdd | Type::Ifs => {
@@ -213,6 +223,11 @@ impl Ai {
             out: Vec::new()
         }
     }
+    //TODO: save to file
+    fn save() {
+
+    }
+    
     //it will be easiest to just add to front/back,
     //as both inp of front and out on back is fed/gathered
     //by seperate function, that doesnt care about brain.len()
@@ -269,6 +284,28 @@ impl Ai {
         //return output
         o
     }
+    
+    //  TODO: ASSIGN MULTIPLE INPUTS TO SINGLE OUTPUT
+    
+    //this *should* be a big vector, nothing is stopping you from making it small
+    //  Vector< inputs, expected outputs >
+    pub fn train(&self, training_data: Vec<(Vec<f32>, Vec<f32>)>) {
+        
+        //th0
+        
+        //th1
+        //TODO: targetted mutation
+
+        //th2..∞
+        if THREAD_CNT > 2 {
+            for i in 0..THREAD_CNT-2 {
+                    
+            }
+        }
+
+        self.save();
+
+    }
 
     //DEBUG
     pub fn list(&self) {
@@ -287,23 +324,19 @@ impl Ai {
                     debug_type,   
                     self.brain[layer][node].out
                 );
-                println!("\ti: {:?}", 
-                    self.brain[layer][node].inp
+                println!("\ti_mul: {:?}", 
+                    self.brain[layer][node].inp_mult
+                );
+                println!("\ti_off: {:?}", 
+                    self.brain[layer][node].inp_off
                 );
             } 
         }
     }
     /* temporary disabled
-    fn recover(&self, s: &str) -> Ai {
-        //recover ai's old state
+    fn recover(&self, s: String) -> Ai {
+        //recover ai from string
     }
     */
 }
 
-impl Cluster {
-    fn new() -> Cluster {
-        Cluster {
-            instances: Vec::new(),
-        }
-    }
-}
