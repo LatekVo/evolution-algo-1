@@ -224,8 +224,8 @@ impl Ai {
         }
     }
     //TODO: save to file
-    fn save() {
-
+    fn save(&self) {
+    
     }
     
     //it will be easiest to just add to front/back,
@@ -302,7 +302,7 @@ impl Ai {
                     
             }
         }
-
+        self.calculate(Vec::new());
         self.save();
 
     }
@@ -339,4 +339,3 @@ impl Ai {
     }
     */
 }
-

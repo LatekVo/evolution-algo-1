@@ -34,10 +34,22 @@
 //  or
 //  -manual selection of ai
 
+fn avg(vec: Vec<f32>) -> f32 {
+    let mut sum: f32 = 0.0;
+    for i in 0..vec.len() {
+        sum += vec[i];
+    }
+    sum / vec.len() as f32
+}
+
+
 mod ai_module;
+mod image_rw;
 
 fn main() -> std::io::Result<()> {
     
+    image_rw::test();
+
     let mut ai: ai_module::Ai = ai_module::Ai::new(5, 5); 
     ai.list();
 
@@ -51,8 +63,26 @@ fn main() -> std::io::Result<()> {
    
     ai.list();
 
+    //get training data
+    let training_data: Vec<(Vec<f32>, Vec<f32>)> = {
+        
+        let mut td: Vec<(Vec<f32>, Vec<f32>)> = Vec::new();
+        
+        for _ in 0..0 {
+            let mut inp: Vec<f32> = Vec::new();
+            let mut out: Vec<f32> = Vec::new();
+
+            inp.push(1.0);
+            inp.push(1.0);
+            out.push(2.0);
+            out.push(3.0);
+            td.push((inp, out));
+        }
+        td
+    };
+
     //run until something happens lol
-    ai.train();
+    ai.train(training_data);
 
 
     println!("{:?}", out);
