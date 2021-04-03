@@ -34,7 +34,8 @@
 //  or
 //  -manual selection of ai
 
-fn avg(vec: Vec<f32>) -> f32 {
+//do i need this?
+fn _avg(vec: Vec<f32>) -> f32 {
     let mut sum: f32 = 0.0;
     for i in 0..vec.len() {
         sum += vec[i];
@@ -46,13 +47,13 @@ fn avg(vec: Vec<f32>) -> f32 {
 mod ai_module;
 mod image_rw;
 
+//any 'use' in here are probably temporary or for testing porpouses
+use image_rw::*;
+
 fn main() -> std::io::Result<()> {
-    
-    image_rw::test();
 
-    let mut ai: ai_module::Ai = ai_module::Ai::new(5, 5); 
+    let mut ai: ai_module::Ai = ai_module::Ai::new(480, 12); 
     ai.list();
-
     let mut inp: Vec<f32> = Vec::new();
     inp.push(4.4);
     inp.push(2.2);
@@ -64,26 +65,20 @@ fn main() -> std::io::Result<()> {
     ai.list();
 
     //get training data
-    let training_data: Vec<(Vec<f32>, Vec<f32>)> = {
+    let training_data: Vec<DataNode> = {
+        let mut td: Vec<DataNode> = Vec::new();
         
-        let mut td: Vec<(Vec<f32>, Vec<f32>)> = Vec::new();
-        
-        for _ in 0..0 {
-            let mut inp: Vec<f32> = Vec::new();
+        for i in 0..0 {
             let mut out: Vec<f32> = Vec::new();
-
-            inp.push(1.0);
-            inp.push(1.0);
-            out.push(2.0);
-            out.push(3.0);
-            td.push((inp, out));
+        }
+        for i in 0..0 {
+            let mut inp: Vec<f32> = Vec::new();
         }
         td
     };
 
     //run until something happens lol
     ai.train(training_data);
-
 
     println!("{:?}", out);
 

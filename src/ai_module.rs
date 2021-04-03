@@ -8,6 +8,7 @@
 //                so that the output will be the input at first, and from there it will mutate
 
 use rand::*;
+use super::image_rw::DataNode;
 const _SUB_NODES: usize = 5;
 const THREAD_CNT: usize = 4;
 //-> => ==>
@@ -43,13 +44,20 @@ pub struct Ai {
     out: Vec<f32>, //may be unnecesary
 }
 
-/*THREAD 0 "MAIN"
+/*NOTE
+  THREAD 0 "MAIN"
     -storing backup
     -calculate as 2..∞
     -.join()
   THREAD 1 "OPS"
     -clone from main \
-    -optimize by heavly modyfying least used nodes
+    -optimize by heavly modyfying least used nodes,
+        lowest: sum_all_inp * sum_all_out
+         1. check if it would be better to just 
+            put this node out of misery
+         2. if not, try mutating nodes and see if results are positive
+         2. if so, chenge the type, and set all outputs to 0
+    //in case this thread brings a lot of positive results, use this exclusivly
   THREAD 2..∞
     -classic random mutation
   
@@ -289,7 +297,7 @@ impl Ai {
     
     //this *should* be a big vector, nothing is stopping you from making it small
     //  Vector< inputs, expected outputs >
-    pub fn train(&self, training_data: Vec<(Vec<f32>, Vec<f32>)>) {
+    pub fn train(&mut self, training_data: Vec<DataNode>) {
         
         //th0
         
