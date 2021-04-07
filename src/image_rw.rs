@@ -21,11 +21,11 @@ impl DataNode {
 //will both check and convert files
 //this function was too simple to be a function,
 //it was very limiting and yet uninfluencial
-//fn file_check(name: &str) -> Option<Data_node>;
+//  fn file_check(name: &str) -> Option<Data_node>;
 
    
 
-pub fn _gather_data() -> Vec<DataNode> {
+pub fn gather_data() -> Vec<DataNode> {
     let mut nodes: Vec<DataNode> = Vec::new();
 
     //push number

@@ -34,7 +34,7 @@
 //  or
 //  -manual selection of ai
 
-//do i need this?
+//do i even need this?
 fn _avg(vec: Vec<f32>) -> f32 {
     let mut sum: f32 = 0.0;
     for i in 0..vec.len() {
@@ -53,34 +53,16 @@ use image_rw::*;
 fn main() -> std::io::Result<()> {
 
     let mut ai: ai_module::Ai = ai_module::Ai::new(480, 12); 
-    ai.list();
-    let mut inp: Vec<f32> = Vec::new();
-    inp.push(4.4);
-    inp.push(2.2);
-    inp.push(2.2);
-    inp.push(2.2);
-    inp.push(2.2);
-    let out = ai.calculate(inp);
+
+    //get training data
+    let training_data: Vec<DataNode> = image_rw::gather_data();
+    
+    //test ai
+    ai.train(training_data);
    
     ai.list();
 
-    //get training data
-    let training_data: Vec<DataNode> = {
-        let mut td: Vec<DataNode> = Vec::new();
-        
-        for i in 0..0 {
-            let mut out: Vec<f32> = Vec::new();
-        }
-        for i in 0..0 {
-            let mut inp: Vec<f32> = Vec::new();
-        }
-        td
-    };
-
-    //run until something happens lol
-    ai.train(training_data);
-
-    println!("{:?}", out);
+    //then calculate new problem using .calculate()
 
     Ok(())
 }

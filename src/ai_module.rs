@@ -133,13 +133,24 @@ impl Node {
         }
 
     }
+    //mutate node's outputs
     fn mutate(&mut self) {
         let mut rng = rand::thread_rng();
         for i in 0..self.inp_off.len() {
-            let a_rng: f32 = rng.gen();
-            let b_rng: f32 = rng.gen();
-            self.inp_mult[i] = self.inp_mult[i] * (a_rng % 0.08);
-            self.inp_off[i] = self.inp_off[i] * (b_rng % 0.08);
+
+            //in case multiplier is empty, the value is set to random, low value
+            if self.inp_mult[i] == 0.0 {
+                self.inp_mult[i] = self.inp_mult[i] + (rng.gen::<f32>() % 0.08) + 0.081;
+            }
+            if self.inp_off[i] == 0.0 { 
+                self.inp_off[i] = self.inp_off[i] + (rng.gen::<f32>() % 0.08);
+            } // and then multiplied accordingly
+
+            //NOTE: inp_off may need to be negative, but im a bit afraid it will
+            //      lead to unintended behaviour, such as inverting nodes.
+            //      Turining it to be able to be negative, but if results are broken, lets turn it off
+            self.inp_mult[i] = self.inp_mult[i] * (rng.gen::<f32>() % 0.08);
+            self.inp_off[i] = self.inp_off[i] + (rng.gen::<f32>() % 0.08);
         }
     }
     //this is a total bodge, but its way more efficient to take whole node as inp.
@@ -147,10 +158,10 @@ impl Node {
         //out is changed after every calculation so i need to reset it
         let mut o = self.out_base.clone();
         //NOTE: get brain coords here and check for "-1" layer's all nodes
+        //probably already did ^ this ^ on the Ai's side
         for i in 0..inp.len() {
             
             let elem = (inp[i].out * self.inp_mult[i]) + self.inp_off[i];
-            
             
             match self.action {
                 Type::Add | Type::InvAdd | Type::Ifs => {
@@ -185,6 +196,7 @@ impl Node {
 }
 
 //WIP, not used, but can be initiated, mainly used so that ai can "choose" the node type
+//probably not gonna be used anyways, now that im implementing the TypeSwitch© (Copyright)
 impl SuperNode {
     fn _new() -> SuperNode {
         let mut rng = rand::thread_rng();
@@ -316,6 +328,7 @@ impl Ai {
     }
 
     //DEBUG
+    #[allow(dead_code)]
     pub fn list(&self) {
         println!("DEBUG // AI_NODES");
         for layer in 0..self.brain.len() {
@@ -341,7 +354,7 @@ impl Ai {
             } 
         }
     }
-    /* temporary disabled
+    /* temporarly disabled
     fn recover(&self, s: String) -> Ai {
         //recover ai from string
     }
