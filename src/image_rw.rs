@@ -27,24 +27,24 @@ impl DataNode {
 
 pub fn gather_data() -> Vec<DataNode> {
     let mut nodes: Vec<DataNode> = Vec::new();
-
+    
     //push number
     let out_pref: String = String::from("o_");
     //push designator and interator
     let _in_pref: String = String::from("i_");
-
+   
+    //search for output data
     let mut o_indx: usize = 0;
     loop {
         let mut name: String = out_pref.clone();
         name.push_str(&o_indx.clone().to_string());
         
-        let exists = std::path::Path::new(&name).exists();
-        if exists {
+        if std::path::Path::new(&name).exists() {
             let img = ImageReader::open(&name).unwrap().decode().unwrap();
-
-            //this *may* not be the brigtest idea, still, gonna convert this, 
-            //Ai *should* handle this al'right
+    
+            //typecast image to f32 vector
             let out_v: Vec<f32> = {
+                //a bunch of 0->255 values
                 let tmp = img.into_bytes();
                 let mut vec: Vec<f32> = Vec::new();
                 for i in 0..tmp.len() {
@@ -53,9 +53,10 @@ pub fn gather_data() -> Vec<DataNode> {
                 vec
             };
             
-            let mut node: DataNode = DataNode::new(SIZE); 
+            //spawn datanode, and set output as our designated vector
+            let mut node: DataNode = DataNode::new(SIZE); //SIZE is temporary fix
             node.out = out_v; 
-            nodes.push(node);
+            nodes.push(node); //and add our DataNode to node registery
             o_indx += 1;
 
         } else {
@@ -63,6 +64,12 @@ pub fn gather_data() -> Vec<DataNode> {
         }   
     }
     
+    //o_indx is not node count, but node index.
+    //it gets incremented by 1 before, now its unnecesary
+    for i in 0..o_indx {
+
+    }
+
     nodes
 
 }
