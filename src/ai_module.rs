@@ -244,9 +244,7 @@ impl Ai {
         }
     }
     //TODO: save to file
-    fn save(&self) {
-    
-    }
+    //moved save(&self); to separate file
     
     //it will be easiest to just add to front/back,
     //as both inp of front and out on back is fed/gathered
@@ -270,7 +268,8 @@ impl Ai {
         //activate all nodes
         for layer in 0..self.brain.len() {
             let prev = { //prev layer to pass to nodes
-                if layer == 0 { // (layer) = (input layer)
+                // (layer) = (input layer)
+                if layer == 0 { 
                     //inp to nodes
                     let mut vec: Vec<Node> = Vec::new();
                     for indx_inp in 0..inp.len() {
@@ -279,12 +278,15 @@ impl Ai {
                         vec.push(inp_node);
                     }
                     vec
+
+                //else use previous node
                 } else {
                     //previous node
                     
                     self.brain[layer-1].clone()
                 }
             };
+            //calculate using previous layer
             for node in 0..self.brain[layer].len() {
                 //previous layer is input
                 self.brain[layer][node].calculate(prev.clone());
@@ -310,7 +312,6 @@ impl Ai {
     //this *should* be a big vector, nothing is stopping you from making it small
     //  Vector< inputs, expected outputs >
     pub fn train(&mut self, training_data: Vec<DataNode>) {
-        
         //th0
         
         //th1
@@ -324,7 +325,6 @@ impl Ai {
         }
         self.calculate(Vec::new());
         self.save();
-
     }
 
     //DEBUG

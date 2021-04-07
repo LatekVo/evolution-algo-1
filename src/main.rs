@@ -46,6 +46,7 @@ fn _avg(vec: Vec<f32>) -> f32 {
 
 mod ai_module;
 mod image_rw;
+mod ai_rw;
 
 //any 'use' in here are probably temporary or for testing porpouses
 use image_rw::*;
