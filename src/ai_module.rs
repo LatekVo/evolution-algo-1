@@ -16,7 +16,7 @@ const THREAD_CNT: usize = 4;
 //advance structure: Nodes -> SuperNodes => Ai
 
 #[derive(Clone)]
-enum Type {
+pub enum Type {
     Add,
     Mult, //will probably have to be if > then multiply or something
     InvAdd,
@@ -24,7 +24,7 @@ enum Type {
     Ifs, //experimental 0/1 if statement, always Type::Add and then 0-1
 }
 #[derive(Clone)]
-struct Node {
+pub struct Node {
     inp_mult: Vec<f32>, //input multipliers
     inp_off: Vec<f32>, //input addition
     out: f32, //this one is changed every calculation
@@ -114,7 +114,8 @@ impl Node {
         }
     }
     //for recovery, used exclusivly by struct 'Ai' method '.recover()'
-    fn _from(t: Type, inp_off_in: Vec<f32>, inp_mult_in: Vec<f32>) -> Node {
+    //this is recycled to be used by 'ai_rw.rs', method 'load()'
+    pub fn from(t: Type, inp_off_in: Vec<f32>, inp_mult_in: Vec<f32>) -> Node {
 
         let x = match t {
             Type::Add => 0.0,
@@ -127,7 +128,7 @@ impl Node {
         Node {
             inp_mult: inp_mult_in, 
             inp_off: inp_off_in,
-            out: x,
+            out: 0.0,
             out_base: x,
             action: t,
         }
@@ -161,6 +162,7 @@ impl Node {
         //probably already did ^ this ^ on the Ai's side
         for i in 0..inp.len() {
             
+            //first multiplying and then adding offset is more beneficial
             let elem = (inp[i].out * self.inp_mult[i]) + self.inp_off[i];
             
             match self.action {
@@ -320,11 +322,25 @@ impl Ai {
         //th2..∞
         if THREAD_CNT > 2 {
             for i in 0..THREAD_CNT-2 {
-                    
+                
             }
         }
-        self.calculate(Vec::new());
-        self.save();
+        let results = self.calculate(Vec::new());
+        super::ai_rw::save("face_fronter".to_owned(), &self.brain);
+    }
+
+    pub fn push_node(&mut self, node: Node) {
+        let len = self.brain.len();
+        self.brain[len - 1_usize].push(node);   
+    }
+
+    pub fn push_line(&mut self, nodes: Vec<Node>) {
+        self.brain.push(nodes); 
+    }
+   
+    //Redundant
+    pub fn add_line(&mut self) {
+        self.brain.push(Vec::new()); 
     }
 
     //DEBUG

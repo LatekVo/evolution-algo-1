@@ -61,7 +61,10 @@ fn main() -> std::io::Result<()> {
     //test ai
     ai.train(training_data);
    
-    ai.list();
+    //ai.list();
+
+    //test loading system
+    ai_rw::load("face_fronter");
 
     //then calculate new problem using .calculate()
 

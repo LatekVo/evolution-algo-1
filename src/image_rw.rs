@@ -23,8 +23,6 @@ impl DataNode {
 //it was very limiting and yet uninfluencial
 //  fn file_check(name: &str) -> Option<Data_node>;
 
-   
-
 pub fn gather_data() -> Vec<DataNode> {
     let mut nodes: Vec<DataNode> = Vec::new();
     
