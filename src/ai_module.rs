@@ -44,7 +44,7 @@ pub struct Ai {
     out: Vec<f32>, //may be unnecesary
 }
 
-/*NOTE
+/*NOTE: This is bad, i should be using GPU, current structure:
   THREAD 0 "MAIN"
     -storing backup
     -calculate as 2..∞
@@ -195,6 +195,11 @@ impl Node {
         self.out = o.clone();
         o
     }
+    
+    pub fn get_inp(&self) -> (Vec<f32>, Vec<f32>) {
+        (self.inp_mult, self.inp_off)
+    }
+
 }
 
 //WIP, not used, but can be initiated, mainly used so that ai can "choose" the node type
@@ -341,6 +346,10 @@ impl Ai {
     //Redundant
     pub fn add_line(&mut self) {
         self.brain.push(Vec::new()); 
+    }
+
+    pub fn get_brain(&self) -> Vec<Vec<Node>> { 
+        self.brain.clone()
     }
 
     //DEBUG

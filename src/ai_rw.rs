@@ -5,6 +5,17 @@ use std::fs;
 
 use super::ai_module as ai_module;
 
+//NOTE: Very important:
+// let y = 255.255_f32;
+// let y_bytes = y.to_bits().to_be_bytes();
+// let original_y = f32::from_bits(u32::from_be_bytes(y_bytes)); // original_y = 255.255 = y
+
+//Also important, im gonna use big endian instead of native, as these files are meant to be
+//transferred beetween computers, and as this data is saved to a file, it doesnt matter wether
+//its big or little endian. This is probably also one of the most inefficient ways of doing it,
+//but i prefer adding 4 lines of code (or so) to my parser, than doing number parser with support
+//for fractions
+
 // will change to ai_module::Ai and use setter vvv
 pub fn save(name: String, ai: &Vec<Vec<ai_module::Node>>) {
     
@@ -26,19 +37,37 @@ pub fn save(name: String, ai: &Vec<Vec<ai_module::Node>>) {
 
     fs::write(&name, f_data.as_bytes()).unwrap();
    
+    
     //actual ai
     for l in 0..ai.len() {
         for n in 0..ai[l].len() {
             //im dumb, project halted, 14th april 2021, in unusable state
-            for i in ai[l][n].inp_off.len() {
-                fs::write(&name, ai[l][n].inp_off[i].as_bytes()).unwrap();
-                if i != ai[l][n].inp_off.len() - 1 {
-                    fs::write(&name, ",".as_bytes()).unwrap();
-                } else { 
-                    fs::write(&name, ";".as_bytes()).unwrap();
+            let node = ai[l][n].get_inp();
+            for off_or_mult in 0..1 {
+                //for every multiplier/off in Node
+                for i in 0..node.0.len() {
+                    
+                    let val: f32;
+                    if off_or_mult == 0 {
+                        val = node.0[i];
+                    } else {
+                        val = node.1[i];
+                    }
+
+                    fs::write(&name, val.to_bits().to_be_bytes()).unwrap(); 
+                    
+                    if i != node.0.len() - 1 {
+                        fs::write(&name, ",".as_bytes()).unwrap();
+                    } else { 
+                        fs::write(&name, ";".as_bytes()).unwrap();
+                    }
+
                 }
+
             }
+
         }
+
     }
 
 }
@@ -146,10 +175,10 @@ pub fn load(f_name: &str) -> Option<ai_module::Ai> {
                     1 | 2 => {
                         match order {
                             1 => {
-                                tmp_inp_off.push(val.parse().unwrap());
+                                tmp_inp_off.clone().push(val.parse().unwrap());
                             },
                             2 => {
-                                tmp_inp_mult.push(val.parse().unwrap());
+                                tmp_inp_mult.clone().push(val.parse().unwrap());
                             },
                             _ => {
                                 panic!("this... this cannot be explained");
